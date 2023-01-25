@@ -1,0 +1,45 @@
+version: "3"
+services:
+    web:
+      container_name: ${APACHE_SERVER}
+      build:
+          context: ./
+          dockerfile: Dockerfile-web
+          args:
+              - MYSQL_ROOT_PASSWORD:${MYSQL_ROOT_PASSWORD}
+              - MYSQL_DEFAULT_USER:${MYSQL_DEFAULT_USER}
+              - APACHE_INTERNAL_PORT:${APACHE_INTERNAL_PORT}
+              - MYSQL_DATABASE:${MYSQL_DATABASE}
+      volumes:
+          - ./src:/var/www/html/
+      ports:
+          - ${APACHE_EXTERNAL_PORT}:${APACHE_INTERNAL_PORT}
+      networks:
+          - default
+      links:
+          - db
+      env_file:
+          - .env
+    db:
+      container_name: ${MYSQL_SERVER}
+      build:
+          context: ./
+          dockerfile: Dockerfile-db
+          args:
+            - MYSQL_IMAGE:${MYSQL_IMAGE}
+            - MYSQL_SERVER:${MYSQL_SERVER}
+            - MYSQL_ROOT_PASSWORD:${MYSQL_ROOT_PASSWORD}
+            - MYSQL_DEFAULT_USER:${MYSQL_USER}
+            - MYSQL_DATABASE:${MYSQL_DATABASE}
+      restart: always
+      
+      ports:
+          - ${MYSQL_EXTERNAL_PORT}:${MYSQL_INTERNAL_PORT}
+      networks:
+          - default
+      volumes:
+            - db:/var/lib/mysql/
+      env_file:
+          - .env
+volumes:
+    db:

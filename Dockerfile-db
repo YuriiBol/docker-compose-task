@@ -1,0 +1,12 @@
+FROM mysql:8.0.30
+
+ARG MYSQL_IMAGE
+ARG MYSQL_SERVER
+ARG MYSQL_ROOT_PASSWORD
+ARG MYSQL_DEFAULT_USER
+ARG MYSQL_DATABASE
+
+
+ADD script.sql /docker-entrypoint-initdb.d
+
+CMD ["mysqld", "--init-file=/docker-entrypoint-initdb.d/script.sql"]
